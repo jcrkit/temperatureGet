@@ -1,0 +1,68 @@
+{% extends 'cover.html' %}
+{% block cover %}
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+
+              <nav>
+                <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar" style="background-color: white"></span>
+            <span class="icon-bar" style="background-color: white"></span>
+            <span class="icon-bar" style="background-color: white"></span>
+          </button>
+          <h3 class="masthead-brand">Temperature  Get</h3>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+                <div class="dropdown">
+                    <li><a style="cursor: pointer" class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        {{ req.user.name }}</a>
+                        <ul style="background-color: darkgrey" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a style="color: white" href="/company/">Our Product</a></li>
+                        <li><a style="color: white" href="#">Personal</a></li>
+                        <li><a style="color: white" href="#">Password reset</a></li>
+                        <li role="separator" class="divider"></li>
+                            <li><a style="color: white" href="/account/logout/">退出</a></li>
+
+                    </ul>
+                    </li>
+
+
+            </li>
+          </ul>
+        </div>
+      </div>
+              </nav>
+            </div>
+          </div>
+
+          <div class="inner cover">
+            <h2 class="cover-heading">Your Temperature</h2>
+            <p class="lead">
+                <div>{% include 'userPage/tempData.html' %}</div>
+
+                <div>{% include 'userPage/history.html' %}</div>
+            </p>
+          </div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p>Thank you for using!</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+{% endblock %}

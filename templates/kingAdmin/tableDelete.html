@@ -1,0 +1,21 @@
+{% extends 'kingAdmin/tableChange.html' %}
+{% load tags %}
+{% block right %}
+    <span style="color: red;font-size: large;font-weight: 700">{{ errors }}</span>
+    {% if obj.count %}
+    {% display_objs_related obj %}
+    {% else %}
+    {% display_obj_related obj %}
+    {% endif %}
+{% endblock %}
+{% block save %}
+    <a href="{{ path }}" class="btn btn-success pull-right">返回</a>
+{% endblock %}
+{% block delete %}
+    <form method="post">{% csrf_token %}
+        <input type="hidden" name="confirm" value="yes">
+        <input type="hidden" name="selected_ids" value="{{ selected_ids }}">
+        <input type="hidden" name="action" value="{{ action }}">
+          <button type="submit" class="btn btn-danger pull-left">Delete</button>
+    </form>
+{% endblock %}

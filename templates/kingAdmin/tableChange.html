@@ -1,0 +1,128 @@
+{% extends 'kingAdmin/kingAdmin.html' %}
+{% load tags %}
+{% load static %}
+{% block main %}
+    <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+          <li><a>delete</a></li>
+          <li><a>save</a></li>
+          </ul>
+        </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    {% block right %}
+    <form class="form-horizontal dd" role="form" method="post" onsubmit="return Dd()">
+    <div style="color: red">{{ form_obj.errors }}</div>
+    {% csrf_token %}
+        {% for obj in form_obj %}
+  <div class="form-group">
+  <label for="id_{{ obj.label.lower }}" class="col-sm-2 control-label" style="font-weight: normal">
+  {% if obj.field.required %}
+    <b>{{ obj.label }}</b>
+      {% else %}
+          {{ obj.label }}
+      {% endif %}
+  </label>
+  <div class="col-sm-6">
+      {% if obj.name in admin_class.filter_horizontal %}
+          {% get_m2m_list admin_class obj form_obj as m2m_obj_list %}
+          {% if obj.name in admin_class.readonly_fields and not admin_class.is_add_form %}
+               <select style="height: 250px" id="id_{{ obj.name }}_from" disabled class="col-sm-5 wait-list" multiple>
+          {% for m2m_obj in m2m_obj_list %}
+              <option value="{{ m2m_obj.id }}" class="wait" >{{ m2m_obj }}</option>
+          {% endfor %}
+          </select>
+              {% else %}
+          <select style="height: 250px" id="id_{{ obj.name }}_from" class="col-sm-5 wait-list" multiple>
+          {% for m2m_obj in m2m_obj_list %}
+              <option value="{{ m2m_obj.id }}" class="wait" ondblclick="MoveElementTo(this,'id_{{ obj.name }}_to', 'id_{{ obj.name }}_from')">{{ m2m_obj }}</option>
+          {% endfor %}
+          </select>
+              {% endif %}
+
+          <div class="col-sm-2" style="margin-top: 100px;text-align: center">
+          <span class="glyphicon glyphicon-arrow-left"></span>
+              <p></p>
+          <span class="glyphicon glyphicon-arrow-right"></span>
+          </div>
+          {% get_m2m_selected_list form_obj obj.name as selected_list %}
+          {% if obj.name in admin_class.readonly_fields and not admin_class.is_add_form %}
+          <select disabled tag="selected-list" name="{{ obj.name }}" style="height: 250px" id="id_{{ obj.name }}_to" class="col-sm-5 chosen-list" multiple>
+          {% for selected_obj in selected_list %}
+              <option class="chosen" value="{{ selected_obj.id }}">{{ selected_obj }}</option>
+          {% endfor %}
+          </select>
+              {% else %}
+              <select tag="selected-list" name="{{ obj.name }}" style="height: 250px" id="id_{{ obj.name }}_to" class="col-sm-5 chosen-list" multiple>
+          {% for selected_obj in selected_list %}
+              <option class="chosen" value="{{ selected_obj.id }}" ondblclick="MoveElementTo(this,'id_{{ obj.name }}_from','id_{{ obj.name }}_to')">{{ selected_obj }}</option>
+          {% endfor %}
+          </select>
+              {% endif %}
+      {% else %}
+          {%if 'password' in obj.name %}
+      {{ obj }}{{ obj.help_text }}
+              {% else %}
+              {{ obj }}
+              {% endif %}
+      {% endif %}
+  </div>
+
+  </div>
+        {% endfor %}
+    {% endblock %}
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-6">
+        {% block save %}
+      <button id="save" type="submit" class="btn btn-success pull-right">Save</button>
+            {% endblock %}
+    {% block delete %}
+      <a href="{% delete_path req.path %}" class="btn btn-danger pull-left">
+          Delete
+      </a>
+        {% endblock %}
+    </div>
+  </div>
+</form>
+    </div>
+    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
+{#    <script>#}
+{#    $('.wait').on('dblclick', function () {#}
+{#        let a=$('.wait-list').children('option');#}
+{#        for (let i=0;i<a.length;i++){#}
+{#            if(a[i].selected===true){#}
+{#                $('.chosen-list').append(a[i])#}
+{#            }#}
+{#        }#}
+{#    });#}
+{##}
+{#    $('.chosen').on('dblclick', function () {#}
+{#        let a=$('.chosen-list').children('option');#}
+{#        for (let i=0;i<a.length;i++){#}
+{#            if(a[i].selected===true){#}
+{#                $('.wait-list').append(a[i])#}
+{#            }#}
+{#        }#}
+{#        })#}
+{#    </script>#}
+
+    <script>
+        function MoveElementTo(ele,target_id,new_target_id) {
+            let opt_ele = "<option value='" + $(ele).val() + "' ondblclick=MoveElementTo(this,'" + new_target_id + "','" + target_id + "')>" + $(ele).text() + "</option>";
+            // $(ele).off().dblclick($(ele), parent_id)
+            $("#" + target_id).append(opt_ele);
+            $(ele).remove();
+        }
+        function Dd() {
+            $('form').find('[disabled]').removeAttr('disabled');
+           $("select[tag='selected-list'] option").each(function () {
+            $(this).prop("selected",true);
+
+
+
+               return true;
+           })
+        }
+
+    </script>
+
+{% endblock %}

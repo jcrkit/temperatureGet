@@ -1,0 +1,38 @@
+{% extends 'kingAdmin/kingAdmin.html' %}
+{% load tags %}
+{% block main %}
+<div class="panel panel-primary">
+  <div class="panel-heading">Panel heading without title</div>
+  <div class="panel-body">
+    <table class="table table-striped">
+        {{ table_list }}
+        {% for app_name, table in table_list.items%}
+        <thead>
+        <tr>
+            <th>{{ app_name }}</th>
+        </tr>
+        </thead>
+        <tbody>
+
+            {% for table_name, admin in table.items %}
+                <tr>
+                <td><a href="{% url 'king_index' app_name table_name %}">{% get_table_name admin %}</a></td>
+                <td>add</td>
+                <td>change</td>
+                </tr>
+                {% endfor %}
+
+        </tbody>
+        {% endfor %}
+    </table>
+
+  </div>
+</div>
+{% endblock %}
+{% block main-style %}
+    <style>
+    .panel{
+        margin: 50px;
+    }
+    </style>
+{% endblock %}

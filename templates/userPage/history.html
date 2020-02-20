@@ -1,0 +1,40 @@
+{% load tags %}
+{% load static %}
+
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <h3>history</h3>
+        </tr>
+        <tr>
+            <td>#</td>
+            <td>id</td>
+            <td>温度</td>
+            <td>时间</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            {% get_temp_objs 'tempAPP' 'temperature' tempData %}
+        </tr>
+        </tbody>
+    </table>
+<form method="post" id="select-ids">
+    {% csrf_token %}
+    <button class="btn btn-info" type="submit">删除</button>
+</form>
+
+<script src="{% static 'js/jquery-3.4.1.js' %}"></script>
+<script>
+    $('#select-ids').submit(
+        function () {
+            let selected_ids = [];
+             $("input[tag='ids']:checked").each(function () {
+                selected_ids.push($(this).val())
+            });
+             let ele = '<input type="hidden" name="selected_ids" value="'+selected_ids+'">';
+             $(this).append(ele)
+        }
+    )
+</script>

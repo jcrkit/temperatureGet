@@ -1,0 +1,161 @@
+{% extends 'kingAdminBase.html' %}
+{% load tags %}
+{% load static %}
+{% block body %}
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Temperature</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+                <div class="dropdown">
+                    <li><a style="cursor: pointer" class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        {{ req.user.name }}</a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#">Personal</a></li>
+                        <li><a href="">Password reset</a></li>
+                        <li role="separator" class="divider"></li>
+                            <li><a href="/account/logout/">退出</a></li>
+
+                    </ul>
+                    </li>
+
+
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+          {% block main %}
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+          <form method="get">
+              {% for filter_field in admin_class.list_filters %}
+                <li>{{ filter_field }}</li>
+                {% render_filter_ele filter_field admin_class filter_conditions %}
+              {% endfor %}
+          <li style="text-align: center"><button type="submit" class="button btn-success">检索</button></li>
+          <li><input placeholder="searchBy {% for fields in admin_class.search_fields %} {{ fields }}{% endfor %}" type="search" name="_q" class="form-control"></li>
+          <li style="text-align: center;"><button type="submit" class="button btn-success">搜索</button></li>
+          </form>
+          <form method="post" class="action-form">{% csrf_token %}
+                  <select name="action" class="form-control action-list">
+                      <option>---</option>
+                      {% for action in admin_class.actions %}
+                      <option value="{{ action }}">
+                      {% get_action_verbose_name action admin_class %}
+                      </option>
+                      {% endfor %}
+                  </select>
+              <li style="text-align: center;"><button type="submit" class="button btn-success">GO</button></li>
+            </form>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h4>{{ table_name }}<a href="{{req.path}}add/" class="pull-right" style="text-decoration: none">Add</a></h4>
+            </div>
+            <div class="panel-body">
+                            <table class="table table-hover">
+
+                <thead>
+
+                <tr>
+                <td><input class="all_check" type="checkbox"></td>
+                    {% for field_name in admin_class.list_display %}
+                    {% table_header req field_name orderByKey filter_conditions admin_class %}
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    {% get_table_objs app_name table_name query_sets %}
+                </tr>
+
+                </tbody>
+
+            </table>
+
+                <div>共{{ query_sets.paginator.count }}条记录</div>
+
+            <nav aria-label="...">
+  <ul class="pagination">
+      {% if query_sets.has_previous %}
+    <li class="previous"><a href="?page={{ query_sets.previous_page_number }}"><span aria-hidden="true">&larr;</span> 上页</a></li>
+      {% else %}
+    <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> 上页</a></li>
+      {% endif %}
+    {% build_paginator query_sets filter_conditions orderBy search %}
+        {% if query_sets.has_next %}
+    <li class="next"><a href="?page={{query_sets.next_page_number}}">下页 <span aria-hidden="true">&rarr;</span></a></li>
+        {% else %}
+    <li class="next disabled"><a>下页 <span aria-hidden="true">&rarr;</span></a></li>
+        {% endif %}
+  </ul>
+</nav>
+            </div>
+        </div>
+
+
+        </div>
+          {% endblock %}
+      {% block main-style %}
+
+{% endblock %}
+      </div>
+    </div>
+    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
+    <script src="{% static 'js/rf.js' %}"></script>
+    <script>
+        $('.action-form').submit(function () {
+            let selected_ids = [];
+            $("input[tag='ids']:checked").each(function () {
+                selected_ids.push($(this).val())
+            });
+            console.log(selected_ids);
+            let selected_action = $('.action-list').val();
+            if (selected_ids.length === 0){
+                alert('无项目选中')
+            }
+            if (selected_action === '---'){
+                alert('无操作选中')
+            }
+            let ele = '<input type="hidden" name="selected_ids" value="'+selected_ids.toString()+'">'
+            $(this).append(ele)
+
+        });
+    $('.all_check').change(function () {
+        if ($(this).prop('checked')) {
+            $("input[tag='ids']").prop('checked', true)
+        }else if(!$(this).prop('checked')){
+            $("input[tag='ids']").prop('checked', false)
+        }
+    });
+    {#$("input[tag='ids']").change(function () {#}
+    {#  if ($('.all_check').prop('checked')===true){#}
+    {#    $("input[tag='ids']").each(function () {#}
+    {#    if($(this).prop('selected') === false){#}
+    {#        $('.all_check').prop('checked', false)#}
+    {#    }#}
+    {#  }) }#}
+    {# } #}
+    {##}
+    {#)#}
+
+
+
+
+    </script>
+{% endblock %}
